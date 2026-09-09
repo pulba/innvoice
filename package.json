@@ -1,0 +1,16 @@
+{
+  "name": "pulba-digital-invoice",
+  "version": "1.0.0",
+  "description": "Pulba Digital Invoice Generator - Web App",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "keywords": [
+    "invoice",
+    "generator",
+    "pulba-digital"
+  ],
+  "author": "Pulba Digital",
+  "license": "MIT"
+}
