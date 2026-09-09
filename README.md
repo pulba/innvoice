@@ -2,10 +2,10 @@
   <img src="logo.webp" alt="Pulba Digital" width="120">
 </p>
 
-<h1 align="center">Pulba Digital — Invoice Generator</h1>
+<h1 align="center">Pulba Digital — Invoice</h1>
 
 <p align="center">
-  <strong>Generator invoice profesional untuk jasa pembuatan website & undangan digital.</strong><br>
+  <strong>Invoice digital profesional untuk jasa pembuatan website & undangan digital.</strong><br>
   Ringan, tanpa backend, 100% responsif di smartphone, tablet, & desktop.
 </p>
 
@@ -56,7 +56,7 @@ Cukup buka file `index.html` di browser favorit Anda.
 2. Pada **Build configuration**:
    - **Framework preset**: `None`
    - **Build command**: *(kosongkan)*
-   - **Build output directory**: `/` *(atau biarkan `dist`)*
+   - **Build output directory**: `/` *(atau kosongkan)*
 3. Klik **Save and Deploy**. Website langsung aktif dalam hitungan detik!
 
 ---
@@ -65,14 +65,11 @@ Cukup buka file `index.html` di browser favorit Anda.
 
 ```
 innvoice/
-├── index.html                             # Halaman utama (Cloudflare Pages default)
-├── pulba-digital-invoice-generator.html   # File alternatif
+├── index.html                             # Halaman utama invoice
 ├── style.css                              # Stylesheet responsif modern
 ├── script.js                              # Logika kalkulasi, scaling, & export
-├── dist/                                  # Build output folder untuk Cloudflare Pages
 ├── logo.webp                              # Logo Pulba Digital
 ├── favicon.png                            # Favicon browser tab
-├── package.json                           # Metadata project & build script
 └── README.md                              # Dokumentasi
 ```
 
