@@ -14,6 +14,16 @@ function dateID(v) {
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+function getPdfFileName() {
+  const customer = document.getElementById('customerName').value.trim() || 'pelanggan';
+  const cleanCustomer = customer
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || 'pelanggan';
+  return `Innvoice-${cleanCustomer}-pulbadigital`;
+}
+
 function makeNumber(dateVal) {
   if (dateVal) {
     const parts = dateVal.split('-');
@@ -132,7 +142,7 @@ function renderInvoice() {
   });
   const grand = subtotal - discount + adjustment;
   document.getElementById('outSubmitted').textContent = 'Submitted on ' + dateID(invoiceDate);
-  document.getElementById('outCustomer').innerHTML = escapeHTML(customer) + '<br>' + escapeHTML(company) + '<br>' + escapeHTML(address).replace(/\n/g, '<br>') + '<br>' + escapeHTML(phone);
+  document.getElementById('outCustomer').innerHTML = (customer ? escapeHTML(customer) : '-') + '<br>' + (company ? escapeHTML(company) + '<br>' : '') + (address ? escapeHTML(address).replace(/\n/g, '<br>') + '<br>' : '') + (phone ? escapeHTML(phone) : '');
   document.getElementById('outProject').textContent = project || '-';
   document.getElementById('outNumber').textContent = number || '-';
   document.getElementById('outDue').textContent = dateID(dueDate);
@@ -147,6 +157,9 @@ function renderInvoice() {
   if (previewBadge) previewBadge.textContent = rupiah(grand);
   const jumpBtnTotal = document.getElementById('btnTotalText');
   if (jumpBtnTotal) jumpBtnTotal.textContent = rupiah(grand);
+
+  // Update document title for clean print to PDF default filename
+  document.title = getPdfFileName();
 
   updateInvoiceScale();
 }
@@ -190,14 +203,28 @@ function loadData() {
   renderInvoice();
 }
 
+function printInvoice() {
+  const fileName = getPdfFileName();
+  document.title = fileName;
+  setTimeout(() => {
+    window.print();
+  }, 50);
+}
+
 async function downloadPNG() {
   const node = document.getElementById('invoice');
   const scaler = document.getElementById('invoiceScaler');
+  const wrapper = document.getElementById('scalerWrapper');
   const prevTransform = scaler ? scaler.style.transform : '';
+  const prevPos = scaler ? scaler.style.position : '';
 
   // Temporarily reset transform for crisp full-resolution A4 export
   if (scaler) {
     scaler.style.transform = 'none';
+    scaler.style.position = 'static';
+  }
+  if (wrapper) {
+    wrapper.style.width = '794px';
   }
 
   try {
@@ -208,7 +235,7 @@ async function downloadPNG() {
       logging: false
     });
     const link = document.createElement('a');
-    link.download = (document.getElementById('invoiceNumber').value || 'invoice') + '.png';
+    link.download = getPdfFileName() + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch (err) {
@@ -217,7 +244,9 @@ async function downloadPNG() {
   } finally {
     if (scaler) {
       scaler.style.transform = prevTransform;
+      scaler.style.position = prevPos;
     }
+    updateInvoiceScale();
   }
 }
 
@@ -254,23 +283,38 @@ function toggleScaleMode() {
 
 function updateInvoiceScale() {
   const scaler = document.getElementById('invoiceScaler');
-  const container = document.getElementById('stageContainer');
+  const wrapper = document.getElementById('scalerWrapper');
   const invoice = document.getElementById('invoice');
-  if (!scaler || !container || !invoice) return;
+  if (!scaler || !wrapper || !invoice) return;
 
   const targetWidth = 794;
   const stage = document.querySelector('.stage');
-  const availableWidth = stage ? stage.clientWidth - 28 : window.innerWidth - 28;
+  const stagePadding = 24; // 12px left + 12px right padding
+  const availableWidth = stage ? (stage.clientWidth - stagePadding) : (window.innerWidth - stagePadding);
 
   if (isFitMode && availableWidth < targetWidth) {
-    const scale = Math.min(1, Math.max(0.3, availableWidth / targetWidth));
+    const scale = Math.min(1, Math.max(0.25, availableWidth / targetWidth));
     scaler.style.transform = `scale(${scale})`;
-    scaler.style.transformOrigin = 'top center';
-    const scaledHeight = invoice.offsetHeight * scale;
-    container.style.height = `${scaledHeight + 20}px`;
+    scaler.style.transformOrigin = 'top left';
+    scaler.style.position = 'absolute';
+    scaler.style.top = '0';
+    scaler.style.left = '0';
+
+    const scaledW = targetWidth * scale;
+    const scaledH = invoice.offsetHeight * scale;
+
+    wrapper.style.width = `${scaledW}px`;
+    wrapper.style.height = `${scaledH}px`;
+    wrapper.style.position = 'relative';
+    wrapper.style.margin = '0 auto';
   } else {
     scaler.style.transform = 'none';
-    container.style.height = 'auto';
+    scaler.style.position = 'relative';
+    scaler.style.top = 'auto';
+    scaler.style.left = 'auto';
+    wrapper.style.width = '794px';
+    wrapper.style.height = 'auto';
+    wrapper.style.margin = '0 auto';
   }
 }
 

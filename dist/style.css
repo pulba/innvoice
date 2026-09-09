@@ -197,9 +197,10 @@ button:active {
   flex-direction: column;
   align-items: center;
   min-width: 0;
+  width: 100%;
 }
 
-/* Toolbar preview: HANYA untuk mobile, tersembunyi di desktop */
+/* Toolbar preview: HANYA untuk mobile, tersembunyi di desktop & cetak */
 .preview-toolbar {
   display: none !important;
 }
@@ -208,16 +209,23 @@ button:active {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   width: 100%;
   max-width: 100%;
-  margin: auto;
+  overflow: hidden;
+}
+
+.scaler-wrapper {
+  position: relative;
+  width: 794px;
+  margin: 0 auto;
+  transition: width 0.15s ease-out, height 0.15s ease-out;
 }
 
 .invoice-scaler {
-  transform-origin: top center;
+  transform-origin: top left;
   transition: transform 0.15s ease-out;
-  display: inline-block;
-  margin: 0 auto;
+  width: 794px;
 }
 
 /* ----------------- INVOICE SHEET (A4 Standard) ----------------- */
@@ -489,7 +497,8 @@ table th:nth-child(4), table td:nth-child(4) { width: 19%; }
 
   .app.view-preview .stage {
     display: flex !important;
-    padding: 16px 12px 60px;
+    padding: 14px 12px 60px;
+    align-items: center;
   }
 
   /* Mobile preview toolbar */
@@ -540,24 +549,41 @@ table th:nth-child(4), table td:nth-child(4) { width: 19%; }
   }
 }
 
-/* ----------------- PRINT STYLES ----------------- */
+/* ----------------- PRINT STYLES (Clean A4 without browser headers/footers) ----------------- */
+@page {
+  size: A4 portrait;
+  margin: 0 !important;
+}
+
 @media print {
-  body {
+  html, body {
     background: #fff !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
+  /* Sembunyikan SEMUA tombol, header navigasi, toolbar preview, dan panel formulir */
+  header,
+  aside,
   .mobile-header,
   .panel,
   .preview-toolbar,
-  .btn-jump-preview {
+  .app.view-preview .preview-toolbar,
+  .btn-jump-preview,
+  button {
     display: none !important;
+    visibility: hidden !important;
   }
 
   .app {
     display: block !important;
     min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .stage {
@@ -565,24 +591,43 @@ table th:nth-child(4), table td:nth-child(4) { width: 19%; }
     margin: 0 !important;
     display: block !important;
     overflow: visible !important;
+    width: 210mm !important;
   }
 
-  .stage-container {
+  .stage-container,
+  .scaler-wrapper {
     display: block !important;
-    height: auto !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+    overflow: visible !important;
   }
 
   .invoice-scaler {
     transform: none !important;
+    position: static !important;
+    width: 210mm !important;
     display: block !important;
   }
 
   .invoice {
     box-shadow: none !important;
+    border: none !important;
     width: 210mm !important;
     min-height: 297mm !important;
-    padding: 50px 55px !important;
+    max-height: 297mm !important;
+    padding: 18mm 20mm !important;
     margin: 0 auto !important;
     border-radius: 0 !important;
+    box-sizing: border-box !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .topline {
+    margin: -10px 0 20px !important;
   }
 }
